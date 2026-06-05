@@ -31,7 +31,7 @@ export default function RegisterPage() {
     try {
       await api.register(email, password);
       const data = await api.login(email, password);
-      login(data.access_token, email);
+      login(data.access_token, data.user || { id: data.user_id, email, role: data.role });
       navigate('/');
     } catch (err) {
       setError(err.message);

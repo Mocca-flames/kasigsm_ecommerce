@@ -8,22 +8,37 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const email = localStorage.getItem('userEmail');
-    if (token && email) {
-      setUser({ email });
+    const storedUser = localStorage.getItem('user');
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (_e) {
+        setUser(null);
+      }
     }
     setLoading(false);
   }, []);
 
-  const login = (token, email) => {
+  const login = (token, userData = {}) => {
+    const data = userData.id && userData.role
+      ? userData
+      : { email: userData.email };
     localStorage.setItem('token', token);
-    localStorage.setItem('userEmail', email);
-    setUser({ email });
+    localStorage.setItem('user', JSON.stringify(data));
+    setUser(data);
+  };
+
+  const refreshUser = (data) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userEmail');
+    localStorage.removeItem('user');
     setUser(null);
   };
 

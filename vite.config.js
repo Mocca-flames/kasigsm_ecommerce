@@ -8,11 +8,23 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://3ac2-102-254-178-13.ngrok-free.app',
+        target: 'https://1887-102-253-85-30.ngrok-free.app',
         changeOrigin: true,
         secure: false,
-        rewrite: path => path.replace(/^\/_?api/, ''),
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/media': {
+        target: 'https://1887-102-253-85-30.ngrok-free.app',
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
       },
     },
   },
-})
+}
+)

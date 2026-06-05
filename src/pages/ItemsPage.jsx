@@ -1,38 +1,97 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
-export default function ItemsPage() {
+const formatPrice = (price, currency = 'ZAR') => {
+  const n = Number(price);
+  if (Number.isNaN(n)) return `${currency} 0.00`;
+  return `${currency} ${n.toFixed(2)}`;
+};
+
+export default function ItemsPage({ initialCategory }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [itemType, setItemType] = useState('');
-  const [category, setCategory] = useState('');
+  const [search, setSearch] = useState('');
+  const [banners, setBanners] = useState([]);
+  const [loadingBanners, setLoadingBanners] = useState(true);
+  const [currentBanner, setCurrentBanner] = useState(0);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 24;
+  const [category, setCategory] = useState(() => {
+    if (initialCategory === 'REMOTE') return 'REMOTE';
+    if (initialCategory === 'TOOL') return 'TOOL';
+    return '';
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    if (initialCategory === 'REMOTE') return 'remote';
+    if (initialCategory === 'TOOL') return 'rental';
+    return 'all';
+  });
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.getItems(itemType || null, category || null);
-      setItems(data);
+      const data = await api.getItems(itemType || null, category || null, search || null, page, limit);
+      setItems(data.items);
+      setTotal(data.total);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+  }, [itemType, category, search, page]);
+
+  const fetchBanners = async () => {
+    try {
+      const data = await api.getBanners();
+      setBanners(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingBanners(false);
+    }
   };
 
   useEffect(() => {
     fetchItems();
-  }, [itemType, category]);
+  }, [fetchItems]);
 
-  const formatPrice = (price, currency = 'ZAR') => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency,
-    }).format(price);
+  useEffect(() => {
+    fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    if (banners.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [banners]);
+
+  const handleSearch = (value) => {
+    setSearch(value);
+    setPage(1);
   };
 
-  if (loading) return <div className="loading">Loading items...</div>;
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'remote') {
+      setCategory('REMOTE');
+    } else if (tab === 'rental') {
+      setCategory('TOOL');
+    } else {
+      setCategory('');
+    }
+    setItemType('');
+    setPage(1);
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
@@ -42,17 +101,44 @@ export default function ItemsPage() {
         <Link to="/cart" className="cart-link">View Cart</Link>
       </header>
 
+      {!loadingBanners && banners.length > 0 && (
+        <div style={{ position: 'relative', width: '100%', maxHeight: 240, overflow: 'hidden', marginBottom: 16, borderRadius: 6 }}>
+          <img src={banners[currentBanner].image_url} alt={`Banner ${currentBanner + 1}`} style={{ width: '100%', height: 240, objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6 }}>
+            {banners.map((_, idx) => (
+              <span
+                key={idx}
+                onClick={() => setCurrentBanner(idx)}
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: idx === currentBanner ? 'var(--green-bright)' : 'rgba(255,255,255,0.3)',
+                  cursor: 'pointer',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="category-tabs">
+        <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => switchTab('all')}>All</button>
+        <button className={`tab-btn ${activeTab === 'remote' ? 'active' : ''}`} onClick={() => switchTab('remote')}>Remote Services</button>
+        <button className={`tab-btn ${activeTab === 'rental' ? 'active' : ''}`} onClick={() => switchTab('rental')}>Tool Rental</button>
+      </div>
+
       <div className="filters">
-        <select value={itemType} onChange={(e) => setItemType(e.target.value)}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        <select value={itemType} onChange={(e) => { setItemType(e.target.value); setPage(1); }}>
           <option value="">All Types</option>
           <option value="SERVICE">Services</option>
           <option value="PRODUCT">Products</option>
-        </select>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">All Categories</option>
-          <option value="INTERNET">Internet</option>
-          <option value="VOICE">Voice</option>
-          <option value="DATA">Data</option>
         </select>
       </div>
 
@@ -61,23 +147,45 @@ export default function ItemsPage() {
           <p className="no-items">No items available</p>
         ) : (
           items.map((item) => (
-            <Link to={`/items/${item.slug}`} key={item.id} className="item-card">
-              {item.thumbnail && (
-                <img src={item.thumbnail} alt={item.title} className="item-thumbnail" />
-              )}
-              <div className="item-info">
-                <span className="item-type">{item.item_type}</span>
-                <h3>{item.title}</h3>
-                <p className="item-description">{item.description}</p>
-                <p className="item-price">{formatPrice(item.price_final, item.currency)}</p>
-                {item.stock !== null && item.stock > 0 && (
-                  <span className="item-stock">{item.stock} in stock</span>
+            <Link to={`/items/${item.slug}`} key={item.id} className="ecom-card">
+              <div className="card-titlebar">
+                <span className="type-badge">{item.item_type}</span>
+                <div className="dots">
+                  <span className="dot active" />
+                  <span className="dot" />
+                  <span className="dot" />
+                </div>
+              </div>
+              <div className="thumb-wrap">
+                {item.media_url && (
+                  <img src={item.media_url} alt={item.title} />
                 )}
+              </div>
+              <div className="card-body">
+                <h3>{item.title}</h3>
+                <div className="desc">{item.description}</div>
+                <div className="meta-row">
+                  <div className="price">{formatPrice(item.price_final, item.currency)}</div>
+                  <div className="meta">
+                    {item.delivery_time && <span>⏱ {item.delivery_time}</span>}
+                    {item.item_type === 'PRODUCT' && (
+                      <span className={`stock ${item.stock > 0 ? 'in' : 'out'}`}>{item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}</span>
+                    )}
+                  </div>
+                </div>
               </div>
             </Link>
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Prev</button>
+          <span>Page {page} of {totalPages}</span>
+          <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next</button>
+        </div>
+      )}
     </div>
   );
 }

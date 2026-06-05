@@ -7,7 +7,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [payingId, setPayingId] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -27,12 +27,16 @@ export default function OrdersPage() {
     }
   };
 
-  const fetchOrderDetail = async (orderId) => {
+  const handlePayWithWallet = async (orderId, amount) => {
+    setPayingId(orderId);
     try {
-      const data = await api.getOrder(orderId);
-      setSelectedOrder(data);
+      await api.payWithWallet(orderId, amount);
+      alert('Payment initiated');
+      fetchOrders();
     } catch (err) {
-      setError(err.message);
+      alert(err.message);
+    } finally {
+      setPayingId(null);
     }
   };
 
@@ -78,55 +82,47 @@ export default function OrdersPage() {
   return (
     <div className="orders-page">
       <h1>Order History</h1>
-      
+
       {orders.length === 0 ? (
         <p className="no-orders">No orders yet</p>
       ) : (
-        <div className="orders-list">
+        <div className="orders-container">
           {orders.map((order) => (
-            <div key={order.id} className="order-card">
-              <div className="order-header">
-                <span className="order-id">Order #{order.id.slice(0, 8)}</span>
-                <span className={`order-status ${getStatusClass(order.status)}`}>
-                  {order.status}
-                </span>
+            <Link to={`/orders/${order.id}`} key={order.id} className="order-ticket">
+              <div className="order-ticket-header">
+                <span className="id">Order #{order.id.slice(0, 8)}</span>
+                <span className={`order-status ${getStatusClass(order.status)}`}>{order.status}</span>
               </div>
-              
-              <div className="order-meta">
-                <span>{formatDate(order.created_at)}</span>
-                <span className="order-total">{formatPrice(order.total_amount, order.currency)}</span>
-              </div>
-              
-              <button 
-                onClick={() => selectedOrder?.id === order.id ? setSelectedOrder(null) : fetchOrderDetail(order.id)}
-                className="btn-text"
-              >
-                {selectedOrder?.id === order.id ? 'Hide Details' : 'View Details'}
-              </button>
-              
-              {selectedOrder?.id === order.id && (
-                <div className="order-items">
-                  {selectedOrder.items.map((item) => (
-                    <div key={item.id} className="order-item">
-                      <span>Item ID: {item.item_id}</span>
-                      <span>Qty: {item.quantity}</span>
-                      <span>{formatPrice(item.unit_price, order.currency)}</span>
-                      
-                      {item.credentials && item.credentials.length > 0 && (
-                        <div className="credentials">
-                          <h4>Your Credentials:</h4>
-                          {item.credentials.map((cred) => (
-                            <div key={cred.id} className="credential">
-                              <code>{cred.payload}</code>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+              <div className="order-ticket-body">
+                <div className="order-meta-line">
+                  <span>{formatDate(order.created_at)}</span>
+                  <span className="val">{formatPrice(order.total_amount, order.currency)}</span>
                 </div>
-              )}
-            </div>
+                {order.items && order.items.map((item, idx) => (
+                  <div key={idx} className="order-item">
+                    <span className="name">{item.title || item.item_id}</span>
+                    <span className="amt">{formatPrice(item.unit_price, order.currency)}</span>
+                  </div>
+                ))}
+                {order.status === 'PENDING' && user.role !== 'ADMIN' && (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <button className="btn-secondary" onClick={(e) => { e.preventDefault(); }}>
+                      Pay with Card
+                    </button>
+                    <button
+                      className="btn-secondary"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePayWithWallet(order.id, order.total_amount);
+                      }}
+                      disabled={payingId === order.id}
+                    >
+                      {payingId === order.id ? 'Processing...' : 'Pay with Wallet'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </Link>
           ))}
         </div>
       )}

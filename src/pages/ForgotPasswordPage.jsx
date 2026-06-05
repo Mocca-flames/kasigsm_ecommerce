@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,9 +14,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await api.login(email, password);
-      login(data.access_token, data.user || { id: data.user_id, email, role: data.role });
-      navigate('/');
+      await api.forgotPassword(email);
+      setSubmitted(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -27,12 +23,25 @@ export default function LoginPage() {
     }
   };
 
+  if (submitted) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1>Check your email</h1>
+          <p>If an account exists for <strong>{email}</strong>, you will receive a password reset link shortly.</p>
+          <p className="auth-switch">
+            <Link to="/login">Back to Login</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Login</h1>
+        <h1>Reset Password</h1>
         {error && <div className="error">{error}</div>}
-        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
@@ -43,27 +52,12 @@ export default function LoginPage() {
               required
             />
           </div>
-          
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Sending...' : 'Send Reset Link'}
           </button>
         </form>
-        
         <p className="auth-switch">
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
-        <p className="auth-switch" style={{ marginTop: 8 }}>
-          <Link to="/forgot-password">Forgot password?</Link>
+          Remember your password? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>

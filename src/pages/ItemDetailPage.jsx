@@ -50,26 +50,24 @@ export default function ItemDetailPage() {
   if (!item) return <div className="error">Item not found</div>;
 
   return (
-    <div className="item-detail-page">
+    <div className="detail-terminal">
       <Link to="/" className="back-link">&larr; Back to Items</Link>
-
-      <div className="item-detail">
-        {item.thumbnail && (
-          <img src={item.thumbnail} alt={item.title} className="detail-thumbnail" />
+      <div className="detail-inner">
+        {item.media_url && (
+          <img src={item.media_url} alt={item.title} className="detail-img" />
         )}
-        
-        <div className="detail-info">
+        <div className="detail-content">
           <span className="item-type">{item.item_type}</span>
           <h1>{item.title}</h1>
           <p className="description">{item.description}</p>
-          
           <div className="price-section">
-            <span className="price">{formatPrice(item.price_final, item.currency)}</span>
-            {item.delivery_time && (
-              <span className="delivery">Delivery: {item.delivery_time}</span>
-            )}
+            <span className="detail-price">{formatPrice(item.price_final, item.currency)}</span>
           </div>
-
+          {item.delivery_time && (
+            <div className="detail-meta">
+              <span>Delivery: {item.delivery_time}</span>
+            </div>
+          )}
           {item.item_type === 'PRODUCT' && item.stock !== null && (
             <div className="stock-info">
               {item.stock > 0 ? (
@@ -79,7 +77,6 @@ export default function ItemDetailPage() {
               )}
             </div>
           )}
-
           {user && item.stock !== 0 && (
             <div className="add-to-cart-section">
               <input
@@ -94,7 +91,6 @@ export default function ItemDetailPage() {
               </button>
             </div>
           )}
-
           {!user && (
             <p className="login-prompt">
               <Link to="/login">Log in</Link> to purchase
@@ -102,6 +98,29 @@ export default function ItemDetailPage() {
           )}
         </div>
       </div>
+      {item.provider_listings && item.provider_listings.length > 0 && (
+        <div style={{ marginTop: 24, borderTop: '1px solid var(--border-dim)', paddingTop: 16 }}>
+          <h3 className="type-sub">Provider Listings</h3>
+          <table className="provider-table">
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Cost</th>
+                <th>Preferred</th>
+              </tr>
+            </thead>
+            <tbody>
+              {item.provider_listings.map((listing, idx) => (
+                <tr key={idx}>
+                  <td>{listing.provider_name}</td>
+                  <td>{formatPrice(listing.cost, item.currency)}</td>
+                  <td>{listing.preferred ? <span className="preferred">✔</span> : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
