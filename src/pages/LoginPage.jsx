@@ -21,6 +21,11 @@ export default function LoginPage() {
       login(data.access_token, data.user || { id: data.user_id, email, role: data.role });
       navigate('/');
     } catch (err) {
+      const msg = err.message.toLowerCase();
+      if (msg.includes('verify') || msg.includes('otp') || msg.includes('not verified') || msg.includes('unverified')) {
+        navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setError(err.message);
     } finally {
       setLoading(false);

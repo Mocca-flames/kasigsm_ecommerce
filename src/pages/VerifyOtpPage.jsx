@@ -8,7 +8,22 @@ export default function VerifyOtpPage() {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
   const navigate = useNavigate();
+
+  const handleResend = async () => {
+    setResending(true);
+    setError('');
+    try {
+      await api.resendOtp(email);
+      setResent(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +68,18 @@ export default function VerifyOtpPage() {
             {loading ? 'Verifying...' : 'Verify'}
           </button>
         </form>
+        <p style={{ marginTop: 16, textAlign: 'center' }}>
+          Didn't receive the code?{' '}
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resending}
+            style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+          >
+            {resending ? 'Resending...' : 'Resend OTP'}
+          </button>
+        </p>
+        {resent && <p style={{ color: 'green', textAlign: 'center' }}>OTP has been resent. Please check your inbox.</p>}
         {error && <div className="error" style={{ marginTop: 12 }}>{error}</div>}
       </div>
     </div>

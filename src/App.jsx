@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ItemsPage from './pages/ItemsPage';
 import ItemDetailPage from './pages/ItemDetailPage';
@@ -12,12 +12,13 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import WalletPage from './pages/WalletPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import TechnicianRequestPage from './pages/TechnicianRequestPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 import './App.css';
 
-function RequireAuth() {
+function RequireAuth({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
-  return <Outlet />;
+  return children;
 }
 
 function NavBar() {
@@ -29,11 +30,12 @@ function NavBar() {
       <Link to="/" className="nav-logo">KasI GSM</Link>
       <div className="nav-links">
         <Link to="/">Browse</Link>
-        <Link to="/services/remote">Remote Services</Link>
-        <Link to="/services/rental">Tool Rental</Link>
+        <Link to="/services">Services</Link>
+        <Link to="/products">Products</Link>
         {user ? (
           <>
             <Link to="/orders">Orders</Link>
+            <Link to="/wallet">Wallet</Link>
             <Link to="/cart">Cart ({cartCount})</Link>
             <button onClick={logout} className="btn-text">Logout</button>
           </>
@@ -54,8 +56,10 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<ItemsPage />} />
-              <Route path="/services/remote" element={<ItemsPage initialCategory="REMOTE" />} />
-              <Route path="/services/rental" element={<ItemsPage initialCategory="TOOL" />} />
+              <Route path="/services" element={<ItemsPage initialCategory="REMOTE" />} />
+              <Route path="/services/remote" element={<Navigate to="/services" replace />} />
+              <Route path="/services/rental" element={<Navigate to="/" replace />} />
+              <Route path="/products" element={<ComingSoonPage />} />
               <Route path="/items/:slug" element={<ItemDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />

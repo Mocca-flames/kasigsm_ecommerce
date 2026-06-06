@@ -27,11 +27,11 @@ export default function OrdersPage() {
     }
   };
 
-  const handlePayWithWallet = async (orderId, amount) => {
+  const handlePayWithWallet = async (orderId) => {
     setPayingId(orderId);
     try {
-      await api.payWithWallet(orderId, amount);
-      alert('Payment initiated');
+      const result = await api.payWithWallet(orderId);
+      alert(`Payment successful! Wallet balance: ${formatPrice(result.wallet_balance)}`);
       fetchOrders();
     } catch (err) {
       alert(err.message);
@@ -113,7 +113,7 @@ export default function OrdersPage() {
                       className="btn-secondary"
                       onClick={(e) => {
                         e.preventDefault();
-                        handlePayWithWallet(order.id, order.total_amount);
+                        handlePayWithWallet(order.id);
                       }}
                       disabled={payingId === order.id}
                     >

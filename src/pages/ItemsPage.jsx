@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
@@ -30,6 +30,25 @@ export default function ItemsPage({ initialCategory }) {
     if (initialCategory === 'TOOL') return 'rental';
     return 'all';
   });
+
+  const prevCategory = useRef(initialCategory);
+  useEffect(() => {
+    if (prevCategory.current !== initialCategory) {
+      prevCategory.current = initialCategory;
+      if (initialCategory === 'REMOTE') {
+        setCategory('REMOTE');
+        setActiveTab('remote');
+      } else if (initialCategory === 'TOOL') {
+        setCategory('TOOL');
+        setActiveTab('rental');
+      } else {
+        setCategory('');
+        setActiveTab('all');
+      }
+      setItemType('');
+      setPage(1);
+    }
+  }, [initialCategory]);
 
   const fetchItems = useCallback(async () => {
     try {

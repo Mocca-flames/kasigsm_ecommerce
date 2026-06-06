@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,9 +29,7 @@ export default function RegisterPage() {
     
     try {
       await api.register(email, password);
-      const data = await api.login(email, password);
-      login(data.access_token, data.user || { id: data.user_id, email, role: data.role });
-      navigate('/');
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(err.message);
     } finally {

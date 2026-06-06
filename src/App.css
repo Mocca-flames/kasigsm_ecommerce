@@ -966,6 +966,21 @@ body {
   letter-spacing: -0.02em;
 }
 
+.wallet-status-card .wallet-status {
+  font: 400 12px var(--font-body);
+  margin-top: var(--space-2);
+}
+.wallet-status-card .wallet-status.active {
+  color: var(--success);
+}
+.wallet-status-card .wallet-status.disabled {
+  color: var(--error);
+}
+.wallet-status-card .wallet-client-ref {
+  font: 400 11px var(--font-mono);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
 .wallet-status-card .low {
   color: var(--warning);
   font: 400 12px var(--font-body);
@@ -1230,4 +1245,24 @@ body {
 /* Terminal card override */
 .terminal-zone .auth-card .btn-primary {
   width: 100%;
+}
+
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.coming-soon h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.coming-soon p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
 }

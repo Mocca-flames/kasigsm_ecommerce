@@ -203,14 +203,17 @@ export const api = {
     return handleResponse(response);
   },
 
-  async topUpWallet(amount, method = 'card') {
+  async topUpWallet(amount, reference = null, proofNote = null) {
+    const body = { amount };
+    if (reference) body.reference = reference;
+    if (proofNote) body.proof_note = proofNote;
     const response = await request('/wallet/top-up', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken()}`,
       },
-      body: JSON.stringify({ amount, method }),
+      body: JSON.stringify(body),
     });
     return handleResponse(response);
   },
@@ -222,14 +225,14 @@ export const api = {
     return handleResponse(response);
   },
 
-  async payWithWallet(orderId, amount) {
+  async payWithWallet(orderId) {
     const response = await request('/wallet/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken()}`,
       },
-      body: JSON.stringify({ order_id: orderId, amount }),
+      body: JSON.stringify({ order_id: orderId }),
     });
     return handleResponse(response);
   },

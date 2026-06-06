@@ -53,11 +53,15 @@ export default function WalletPage() {
     setTopUpError('');
     setTopUpSuccess('');
     setTopUpLoading(true);
+
+    const numAmount = Number(amount);
+    if (numAmount < 100) { setTopUpError('Minimum top-up is R100'); setTopUpLoading(false); return; }
+    if (numAmount > 5000) { setTopUpError('Maximum top-up is R5,000'); setTopUpLoading(false); return; }
+    if (numAmount % 100 !== 0) { setTopUpError('Amount must be a multiple of R100'); setTopUpLoading(false); return; }
+
     try {
-      await api.topUpWallet(Number(amount));
-      setTopUpSuccess('Top-up successful');
-      const walletData = await api.getWalletMe();
-      setWallet(walletData);
+      await api.topUpWallet(numAmount);
+      setTopUpSuccess('Top-up request submitted. Admin will review shortly.');
       const txData = await api.getWalletTransactions();
       setTransactions(txData);
       setAmount('');
@@ -67,6 +71,9 @@ export default function WalletPage() {
       setTopUpLoading(false);
     }
   };
+
+  const isCredit = (type) => ['TOPUP', 'ADMIN_CREDIT', 'REFUND'].includes(type);
+  const getTxAmount = (tx) => (isCredit(tx.type) ? `+${formatPrice(tx.amount)}` : `-${formatPrice(tx.amount)}`);
 
   if (!user) {
     return (
@@ -86,18 +93,27 @@ export default function WalletPage() {
       <div className="wallet-status-card">
         <div className="lbl">Balance</div>
         <div className="balance">{formatPrice(wallet?.balance)}</div>
-        {wallet && wallet.balance < 100 && (
+        {wallet?.is_low_balance && (
           <div className="low">Low balance — top up recommended</div>
+        )}
+        {wallet?.status && (
+          <div className={`wallet-status ${wallet.status.toLowerCase()}`}>
+            Status: {wallet.status}
+          </div>
+        )}
+        {wallet?.client_ref && (
+          <div className="wallet-client-ref">Ref: {wallet.client_ref}</div>
         )}
         <form onSubmit={handleTopUp} style={{ marginTop: 16 }}>
           <div className="form-group">
-            <label>Top Up Amount</label>
+            <label>Top Up Amount (R100 – R5,000, multiples of R100)</label>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              min="1"
-              step="0.01"
+              min="100"
+              max="5000"
+              step="100"
               required
             />
           </div>
@@ -129,8 +145,8 @@ export default function WalletPage() {
                 <tr key={tx.id || idx}>
                   <td>{formatDate(tx.created_at)}</td>
                   <td>{tx.description || tx.type}</td>
-                  <td className={tx.type === 'credit' ? 'credit' : 'debit'}>
-                    {tx.type === 'credit' ? '+' : '-'}{formatPrice(tx.amount)}
+                  <td className={isCredit(tx.type) ? 'credit' : 'debit'}>
+                    {getTxAmount(tx)}
                   </td>
                 </tr>
               ))
