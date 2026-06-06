@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import HomePage from './pages/HomePage';
 import ItemsPage from './pages/ItemsPage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import LoginPage from './pages/LoginPage';
@@ -24,26 +25,61 @@ function RequireAuth({ children }) {
 function NavBar() {
   const { user, logout } = useAuth();
   const cartCount = JSON.parse(localStorage.getItem('cart') || '[]').length;
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+  const onDark = isHome;
 
   return (
-    <nav className="navbar">
-      <Link to="/" className="nav-logo">KasI GSM</Link>
+    <nav className={`navbar${onDark ? ' navbar--dark' : ''}`}>
+      <Link to="/" className="nav-logo">
+        <span className="logo-accent">Kasi</span>
+        <span className="logo-main">GSM</span>
+      </Link>
       <div className="nav-links">
-        <Link to="/">Browse</Link>
+        <Link to="/">Home</Link>
         <Link to="/services">Services</Link>
-        <Link to="/products">Products</Link>
-        {user ? (
+        {!user ? (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register" className="cart-link">Register</Link>
+          </>
+        ) : (
           <>
             <Link to="/orders">Orders</Link>
             <Link to="/wallet">Wallet</Link>
-            <Link to="/cart">Cart ({cartCount})</Link>
+            <Link to="/cart" className="cart-link">Cart ({cartCount})</Link>
             <button onClick={logout} className="btn-text">Logout</button>
           </>
-        ) : (
-          <Link to="/login">Login</Link>
         )}
       </div>
     </nav>
+  );
+}
+
+function MainContent() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+  return (
+    <main className={`main-content${isHome ? ' main-content--home' : ''}`}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/services" element={<ItemsPage initialCategory="REMOTE" />} />
+        <Route path="/services/remote" element={<Navigate to="/services" replace />} />
+        <Route path="/services/rental" element={<Navigate to="/services" replace />} />
+        <Route path="/products" element={<ComingSoonPage />} />
+        <Route path="/items/:slug" element={<ItemDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/:id" element={<RequireAuth><OrderDetailPage /></RequireAuth>} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/wallet" element={<RequireAuth><WalletPage /></RequireAuth>} />
+        <Route path="/technician/request" element={<RequireAuth><TechnicianRequestPage /></RequireAuth>} />
+      </Routes>
+    </main>
   );
 }
 
@@ -53,26 +89,7 @@ function App() {
       <AuthProvider>
         <div className="app">
           <NavBar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<ItemsPage />} />
-              <Route path="/services" element={<ItemsPage initialCategory="REMOTE" />} />
-              <Route path="/services/remote" element={<Navigate to="/services" replace />} />
-              <Route path="/services/rental" element={<Navigate to="/" replace />} />
-              <Route path="/products" element={<ComingSoonPage />} />
-              <Route path="/items/:slug" element={<ItemDetailPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/orders/:id" element={<RequireAuth><OrderDetailPage /></RequireAuth>} />
-              <Route path="/verify-otp" element={<VerifyOtpPage />} />
-              <Route path="/payment/success" element={<PaymentSuccessPage />} />
-              <Route path="/wallet" element={<RequireAuth><WalletPage /></RequireAuth>} />
-              <Route path="/technician/request" element={<RequireAuth><TechnicianRequestPage /></RequireAuth>} />
-            </Routes>
-          </main>
+          <MainContent />
         </div>
       </AuthProvider>
     </BrowserRouter>

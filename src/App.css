@@ -156,11 +156,27 @@ body {
   background: var(--accent-subtle);
 }
 
+/* Home page (dark hero overlay) — make navbar sit over light hero without
+   a hard background while the user is on the homepage. */
+.navbar--dark {
+  background: transparent;
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(11, 14, 20, 0.5);
+}
+
 /* ==================== Layout ==================== */
 .main-content {
   max-width: var(--grid-max);
   margin: 0 auto;
   padding: var(--space-6) var(--grid-gutter) var(--space-8);
+}
+
+.main-content--home {
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .loading,
@@ -384,10 +400,15 @@ body {
   flex: 1;
 }
 
-.ecom-card .card-body h3 {
+.ecom-card .card-title {
   font: 500 14px var(--font-body);
   color: var(--text-primary);
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .desc {
@@ -408,18 +429,30 @@ body {
   margin-top: auto;
   padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .price {
   font: 600 18px var(--font-mono);
   color: var(--accent);
+  white-space: nowrap;
 }
 
 .meta {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
   font: 400 11px var(--font-body);
   color: var(--text-secondary);
+  justify-content: flex-end;
+}
+.meta-dur {
+  white-space: nowrap;
+}
+.meta-del {
+  white-space: nowrap;
+  opacity: 0.8;
 }
 
 .stock.in,

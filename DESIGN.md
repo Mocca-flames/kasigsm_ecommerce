@@ -220,7 +220,7 @@ Identical to existing terminal system:
 Height: 56px
 Background: var(--store-bg)
 Border-bottom: 1px solid var(--border-subtle)
-Logo: "KasI GSM" — "KasI" in var(--accent), "GSM" in var(--text-primary), font-body 700
+Logo: "KasiGSM" — "Kasi" in var(--accent), "GSM" in var(--text-primary), font-body 700
 Nav links: var(--text-secondary) → var(--text-primary) on hover, font-body 14px
 Sticky at top, z-50
 No terminal styling

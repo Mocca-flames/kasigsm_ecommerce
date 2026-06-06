@@ -24,10 +24,10 @@ export default function OrderDetailPage() {
     fetchOrder();
   }, [id]);
 
-  const formatPrice = (price, currency = 'ZAR') => {
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency,
+      currency: 'ZAR',
     }).format(price);
   };
 
@@ -68,7 +68,7 @@ export default function OrderDetailPage() {
         <div className="order-ticket-body">
           <div className="order-meta-line">
             <span>Placed: {formatDate(order.created_at)}</span>
-            <span className="val">{formatPrice(order.total_amount, order.currency)}</span>
+            <span className="val">{formatPrice(order.total_amount)}</span>
           </div>
           {order.updated_at && (
             <div className="order-meta-line">
@@ -79,8 +79,8 @@ export default function OrderDetailPage() {
           {order.items && order.items.map((item, idx) => (
             <div key={idx} className="order-item">
               <span className="name">{item.title || item.item_id}</span>
-              <span>{formatPrice(item.unit_price, order.currency)} × {item.quantity}</span>
-              <span className="amt">{formatPrice(item.unit_price * item.quantity, order.currency)}</span>
+                  <span>{formatPrice(item.unit_price)} × {item.quantity}</span>
+                  <span className="amt">{formatPrice(item.unit_price * item.quantity)}</span>
             </div>
           ))}
 

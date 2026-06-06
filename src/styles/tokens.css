@@ -1,0 +1,73 @@
+/* ============================================================
+   HOME PAGE DESIGN TOKENS
+   Source of truth for colors, typography, spacing.
+   Use these everywhere — no hardcoded hex values in components.
+   ============================================================ */
+
+:root {
+  /* Page backgrounds (dark / terminal register) */
+  --color-bg-page:         #0A0A0F;
+  --color-bg-card:         #111118;
+  --color-bg-input:        #0F0F1A;
+  --color-bg-hover:        rgba(0, 200, 150, 0.05);
+
+  /* Borders */
+  --color-border-default:  #1E1E2E;
+  --color-border-active:   #00C896;
+  --color-border-warning:  #FF6B35;
+  --color-border-error:    #FF3B3B;
+  --color-border-subtle:   rgba(255, 255, 255, 0.06);
+
+  /* Accent */
+  --color-accent:          #00C896;
+  --color-accent-dim:      rgba(0, 200, 150, 0.15);
+  --color-premium:         #7B61FF;
+  --color-warning:         #FF6B35;
+  --color-error:           #FF3B3B;
+  --color-amber:           #FFB800;
+
+  /* Text */
+  --color-text-primary:    #E8E8F0;
+  --color-text-secondary:  #8888A0;
+  --color-text-muted:      #444460;
+  --color-text-data:       #00C896;
+  --color-text-price:      #E8E8F0;
+  --color-text-save:       #00C896;
+  --color-text-strike:     #FF3B3B;
+
+  /* Status dots */
+  --color-status-idle:      #444460;
+  --color-status-scanning:  #FFB800;
+  --color-status-connected: #00C896;
+  --color-status-error:     #FF3B3B;
+
+  /* Hero / editorial section (lighter) */
+  --color-bg-editorial:     #F8F8FC;
+  --color-text-editorial:   #0A0A0F;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.5rem;
+  --text-2xl:  2rem;
+  --text-data: 1.1rem;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    600;
+
+  --tracking-wide:   0.04em;
+  --tracking-wider:  0.08em;
+  --tracking-widest: 0.12em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-editorial:   #0F0F18;
+    --color-text-editorial: #E8E8F0;
+  }
+}

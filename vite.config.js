@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://1887-102-253-85-30.ngrok-free.app',
+        target: 'http://api.kasigsm.co.za:8000',
         changeOrigin: true,
         secure: false,
         headers: {
@@ -17,7 +17,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/media': {
-        target: 'https://1887-102-253-85-30.ngrok-free.app',
+        target: 'http://api.kasigsm.co.za:8000',
         changeOrigin: true,
         secure: false,
         headers: {

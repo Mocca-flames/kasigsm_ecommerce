@@ -19,10 +19,10 @@ export default function CartPage() {
     setCart(JSON.parse(localStorage.getItem('cart') || '[]'));
   }, []);
 
-  const formatPrice = (price, currency = 'ZAR') => {
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency,
+      currency: 'ZAR',
     }).format(price);
   };
 
@@ -120,7 +120,7 @@ export default function CartPage() {
           {cart.map((item, index) => (
             <tr key={index}>
               <td className="item-title">{item.title}</td>
-              <td className="item-price">{formatPrice(item.price, item.currency)}</td>
+              <td className="item-price">{formatPrice(item.price)}</td>
               <td>
                 <div className="qty-ctrl">
                   <button onClick={() => updateQuantity(index, item.quantity - 1)}>-</button>
@@ -128,7 +128,7 @@ export default function CartPage() {
                   <button onClick={() => updateQuantity(index, item.quantity + 1)}>+</button>
                 </div>
               </td>
-              <td>{formatPrice(item.price * item.quantity, item.currency)}</td>
+              <td>{formatPrice(item.price * item.quantity)}</td>
               <td>
                 <button onClick={() => removeItem(index)} className="btn-remove">Remove</button>
               </td>

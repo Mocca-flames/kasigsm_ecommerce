@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
-const formatPrice = (price, currency = 'ZAR') => {
-  const n = Number(price);
-  if (Number.isNaN(n)) return `${currency} 0.00`;
-  return `${currency} ${n.toFixed(2)}`;
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('en-ZA', {
+    style: 'currency',
+    currency: 'ZAR',
+  }).format(price);
 };
 
 export default function ItemsPage({ initialCategory }) {
@@ -177,20 +178,22 @@ export default function ItemsPage({ initialCategory }) {
               </div>
               <div className="thumb-wrap">
                 {item.media_url && (
-                  <img src={item.media_url} alt={item.title} />
+                  <img src={item.media_url} alt={item.meta?.display_title || item.title} />
                 )}
               </div>
-              <div className="card-body">
-                <h3>{item.title}</h3>
-                <div className="desc">{item.description}</div>
+               <div className="card-body">
+                 <div className="card-title">{item.meta?.display_title || item.title}</div>
+                 <div className="desc">{item.description}</div>
                 <div className="meta-row">
-                  <div className="price">{formatPrice(item.price_final, item.currency)}</div>
-                  <div className="meta">
-                    {item.delivery_time && <span>⏱ {item.delivery_time}</span>}
-                    {item.item_type === 'PRODUCT' && (
-                      <span className={`stock ${item.stock > 0 ? 'in' : 'out'}`}>{item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}</span>
-                    )}
-                  </div>
+                   <div className="price">{formatPrice(item.price_final)}</div>
+                <div className="meta">
+                  {item.item_type === 'SERVICE' && item.meta?.rent_duration && <span className="meta-dur">⏱ {item.meta.rent_duration}</span>}
+                  {item.item_type === 'PRODUCT' && item.meta?.rent_duration && <span className="meta-dur">Rent {item.meta.rent_duration}</span>}
+                  {item.item_type === 'PRODUCT' && item.delivery_time && <span className="meta-del">Delivery {item.delivery_time}</span>}
+                  {item.item_type === 'PRODUCT' && (
+                    <span className={`stock ${item.stock > 0 ? 'in' : 'out'}`}>{item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}</span>
+                  )}
+                </div>
                 </div>
               </div>
             </Link>

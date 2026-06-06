@@ -40,10 +40,10 @@ export default function OrdersPage() {
     }
   };
 
-  const formatPrice = (price, currency = 'ZAR') => {
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency,
+      currency: 'ZAR',
     }).format(price);
   };
 
@@ -96,12 +96,12 @@ export default function OrdersPage() {
               <div className="order-ticket-body">
                 <div className="order-meta-line">
                   <span>{formatDate(order.created_at)}</span>
-                  <span className="val">{formatPrice(order.total_amount, order.currency)}</span>
+                  <span className="val">{formatPrice(order.total_amount)}</span>
                 </div>
                 {order.items && order.items.map((item, idx) => (
                   <div key={idx} className="order-item">
                     <span className="name">{item.title || item.item_id}</span>
-                    <span className="amt">{formatPrice(item.unit_price, order.currency)}</span>
+                    <span className="amt">{formatPrice(item.unit_price)}</span>
                   </div>
                 ))}
                 {order.status === 'PENDING' && user.role !== 'ADMIN' && (

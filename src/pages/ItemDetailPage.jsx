@@ -26,10 +26,10 @@ export default function ItemDetailPage() {
     fetchItem();
   }, [slug]);
 
-  const formatPrice = (price, currency = 'ZAR') => {
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency,
+      currency: 'ZAR',
     }).format(price);
   };
 
@@ -39,7 +39,7 @@ export default function ItemDetailPage() {
     if (existing) {
       existing.quantity += quantity;
     } else {
-      cart.push({ item_id: item.id, title: item.title, price: item.price_final, quantity, currency: item.currency });
+      cart.push({ item_id: item.id, title: item.title, price: item.price_final, quantity, currency: 'ZAR' });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     navigate('/cart');
@@ -54,16 +54,21 @@ export default function ItemDetailPage() {
       <Link to="/" className="back-link">&larr; Back to Items</Link>
       <div className="detail-inner">
         {item.media_url && (
-          <img src={item.media_url} alt={item.title} className="detail-img" />
+          <img src={item.media_url} alt={item.meta?.display_title || item.title} className="detail-img" />
         )}
         <div className="detail-content">
           <span className="item-type">{item.item_type}</span>
-          <h1>{item.title}</h1>
+          <h1>{item.meta?.display_title || item.title}</h1>
           <p className="description">{item.description}</p>
           <div className="price-section">
-            <span className="detail-price">{formatPrice(item.price_final, item.currency)}</span>
+            <span className="detail-price">{formatPrice(item.price_final)}</span>
           </div>
-          {item.delivery_time && (
+          {item.meta?.rent_duration && (
+            <div className="detail-meta">
+              <span>Rental duration: {item.meta.rent_duration}</span>
+            </div>
+          )}
+          {item.delivery_time && !item.meta?.rent_duration && (
             <div className="detail-meta">
               <span>Delivery: {item.delivery_time}</span>
             </div>
@@ -113,7 +118,7 @@ export default function ItemDetailPage() {
               {item.provider_listings.map((listing, idx) => (
                 <tr key={idx}>
                   <td>{listing.provider_name}</td>
-                  <td>{formatPrice(listing.cost, item.currency)}</td>
+                  <td>{formatPrice(listing.cost)}</td>
                   <td>{listing.preferred ? <span className="preferred">✔</span> : ''}</td>
                 </tr>
               ))}

@@ -271,4 +271,83 @@ export const api = {
     });
     return handleResponse(response);
   },
+
+  /* ============================================================
+     HOME PAGE — Device Scanner endpoints
+     Each call is defensive: returns [] / { items: [] } on error.
+     ============================================================ */
+
+  async getDeviceBrands() {
+    try {
+      const response = await request('/device/brands');
+      const data = await handleResponse(response);
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('api.getDeviceBrands failed:', e.message);
+      return [];
+    }
+  },
+
+  async getDeviceChipsets() {
+    try {
+      const response = await request('/device/chipsets');
+      const data = await handleResponse(response);
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('api.getDeviceChipsets failed:', e.message);
+      return [];
+    }
+  },
+
+  async getDeviceIssues() {
+    try {
+      const response = await request('/device/issues');
+      const data = await handleResponse(response);
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('api.getDeviceIssues failed:', e.message);
+      return [];
+    }
+  },
+
+  async submitDeviceScan(payload) {
+    const response = await request('/device/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
+  },
+
+  async recommendServices({ issues, brand_slug, chipset_key, top = 3 }) {
+    try {
+      const response = await request('/device/recommend/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          issues: Array.isArray(issues) ? issues : (issues ? [issues] : []),
+          brand_slug,
+          chipset_key,
+          top,
+        }),
+      });
+      const data = await handleResponse(response);
+      if (data && Array.isArray(data.services)) return data.services;
+      if (data && Array.isArray(data.items)) return data.items;
+      if (Array.isArray(data)) return data;
+      return [];
+    } catch (e) {
+      console.warn('api.recommendServices failed:', e.message);
+      return [];
+    }
+  },
+
+  async checkImei(imei) {
+    const response = await request('/imei-checker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imei }),
+    });
+    return handleResponse(response);
+  },
 };
