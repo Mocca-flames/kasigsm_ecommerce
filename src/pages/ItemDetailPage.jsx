@@ -57,7 +57,7 @@ export default function ItemDetailPage() {
           <img src={item.media_url} alt={item.meta?.display_title || item.title} className="detail-img" />
         )}
         <div className="detail-content">
-          <span className="item-type">{item.item_type}</span>
+          <span className="item-type">{item.category || 'Service'}</span>
           <h1>{item.meta?.display_title || item.title}</h1>
           <p className="description">{item.description}</p>
           <div className="price-section">
@@ -73,21 +73,12 @@ export default function ItemDetailPage() {
               <span>Delivery: {item.delivery_time}</span>
             </div>
           )}
-          {item.item_type === 'PRODUCT' && item.stock !== null && (
-            <div className="stock-info">
-              {item.stock > 0 ? (
-                <span className="in-stock">{item.stock} available in stock</span>
-              ) : (
-                <span className="out-of-stock">Out of stock</span>
-              )}
-            </div>
-          )}
-          {user && item.stock !== 0 && (
+          {user && (
             <div className="add-to-cart-section">
               <input
                 type="number"
                 min="1"
-                max={item.stock || 999}
+                max={999}
                 value={quantity}
                 onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
               />

@@ -4,10 +4,9 @@ const COLUMNS = [
   {
     title: 'Store',
     links: [
-      { label: 'All tools', to: '/browse' },
+      { label: 'All services', to: '/services' },
       { label: 'Remote services', to: '/services' },
-      { label: 'Tool rental', to: '/browse?category=rental' },
-      { label: 'New arrivals', to: '/browse?sort=new' },
+      { label: 'Tool rental', to: '/services/rental' },
     ],
   },
   {

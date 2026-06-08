@@ -117,7 +117,7 @@ export default function ItemsPage({ initialCategory }) {
   return (
     <div className="items-page">
       <header className="page-header">
-        <h1>Our Services & Products</h1>
+        <h1>Our Services</h1>
         <Link to="/cart" className="cart-link">View Cart</Link>
       </header>
 
@@ -158,7 +158,6 @@ export default function ItemsPage({ initialCategory }) {
         <select value={itemType} onChange={(e) => { setItemType(e.target.value); setPage(1); }}>
           <option value="">All Types</option>
           <option value="SERVICE">Services</option>
-          <option value="PRODUCT">Products</option>
         </select>
       </div>
 
@@ -169,7 +168,7 @@ export default function ItemsPage({ initialCategory }) {
           items.map((item) => (
             <Link to={`/items/${item.slug}`} key={item.id} className="ecom-card">
               <div className="card-titlebar">
-                <span className="type-badge">{item.item_type}</span>
+                <span className="type-badge">{item.category || 'Service'}</span>
                 <div className="dots">
                   <span className="dot active" />
                   <span className="dot" />
@@ -187,12 +186,8 @@ export default function ItemsPage({ initialCategory }) {
                 <div className="meta-row">
                    <div className="price">{formatPrice(item.price_final)}</div>
                 <div className="meta">
-                  {item.item_type === 'SERVICE' && item.meta?.rent_duration && <span className="meta-dur">⏱ {item.meta.rent_duration}</span>}
-                  {item.item_type === 'PRODUCT' && item.meta?.rent_duration && <span className="meta-dur">Rent {item.meta.rent_duration}</span>}
-                  {item.item_type === 'PRODUCT' && item.delivery_time && <span className="meta-del">Delivery {item.delivery_time}</span>}
-                  {item.item_type === 'PRODUCT' && (
-                    <span className={`stock ${item.stock > 0 ? 'in' : 'out'}`}>{item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}</span>
-                  )}
+                  {item.delivery_time && <span className="meta-del">⏱ {item.delivery_time}</span>}
+                  {item.meta?.rent_duration && <span className="meta-dur">{item.meta.rent_duration}</span>}
                 </div>
                 </div>
               </div>

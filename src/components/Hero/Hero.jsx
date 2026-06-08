@@ -62,7 +62,7 @@ export default function Hero() {
                 Scan new phone
               </a>
             )}
-            <Link to="/browse" className="hero__btn hero__btn--secondary">
+            <Link to="/services" className="hero__btn hero__btn--secondary">
               Browse all tools
             </Link>
           </div>

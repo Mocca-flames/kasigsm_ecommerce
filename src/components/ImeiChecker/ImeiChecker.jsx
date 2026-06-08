@@ -34,12 +34,12 @@ export default function ImeiChecker() {
           label: r.blacklist === 'flagged'
             ? 'Need to remove this blacklist flag?'
             : 'Need to unlock this device?',
-          link: '/browse?category=unlock',
+          link: '/services',
         });
       } else if (r?.warranty === 'expired') {
         setUpsell({
           label: 'Out of warranty? See compatible tools',
-          link: '/browse',
+          link: '/services',
         });
       }
     } catch (e2) {

@@ -1,13 +1,14 @@
 /* ============================================================
    CURRENCY — KasiGSM displays all prices in ZAR (R).
-   Source price is treated as USD; converted at 1 USD = 16.5 ZAR.
+   API returns prices already in ZAR (converted server-side).
+   Use fromUsd: true only for hardcoded USD values.
    ============================================================ */
 
 export const USD_TO_ZAR = 16.5;
 export const CURRENCY_LABEL = 'R';
 
 export function zar(value, opts = {}) {
-  const { fromUsd = true, decimals = 2 } = opts;
+  const { fromUsd = false, decimals = 2 } = opts;
   if (value == null) return `${CURRENCY_LABEL}—`;
   const n = Number(value);
   if (Number.isNaN(n)) return `${CURRENCY_LABEL}—`;
