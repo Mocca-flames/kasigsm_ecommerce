@@ -116,10 +116,7 @@ export default function ItemsPage({ initialCategory }) {
 
   return (
     <div className="items-page">
-      <header className="page-header">
-        <h1>Our Services</h1>
-        <Link to="/cart" className="cart-link">View Cart</Link>
-      </header>
+      
 
       {!loadingBanners && banners.length > 0 && (
         <div style={{ position: 'relative', width: '100%', maxHeight: 240, overflow: 'hidden', marginBottom: 16, borderRadius: 6 }}>
