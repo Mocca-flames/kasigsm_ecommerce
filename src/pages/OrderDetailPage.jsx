@@ -88,7 +88,9 @@ export default function OrderDetailPage() {
             <div className="credentials-block">
               <h4>Your Credentials</h4>
               {order.items.flatMap((item) => item.credentials || []).map((cred, idx) => (
-                <pre key={cred.id || idx}>{JSON.stringify(cred, null, 2)}</pre>
+                <div key={cred.id || idx} className="credential-item">
+                  <pre>{cred.payload}</pre>
+                </div>
               ))}
             </div>
           )}
