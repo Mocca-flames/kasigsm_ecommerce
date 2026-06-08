@@ -21,7 +21,7 @@ import { api } from '../../services/api';
 
 const SOFT_REG_DELAY_MS = 3000;
 
-export default function Scanner() {
+export default function Scanner({ onReset }) {
   const serial = useDeviceSerial();
   const { issues, loading: issuesLoading } = useIssues();
   const [issue, setIssue] = useState(null);
@@ -113,6 +113,7 @@ export default function Scanner() {
     setToolItems([]);
     setShowPrompt(false);
     serial.reset();
+    if (onReset) onReset();
   };
 
   const showScannerShell = serial.supported;

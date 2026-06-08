@@ -169,7 +169,6 @@ IDLE → REQUESTING → READING → IDENTIFIED → ISSUE_SELECTED → RESULTS
     App.jsx
     main.jsx
   ```
-- [ ] `.env` file: `VITE_API_BASE_URL=https://your-ngrok-url.ngrok.io`
 - [ ] CORS: FastAPI configured to allow `kasigsm.co.za` and `localhost:5173`
 - [ ] All API calls go through `lib/api.js` — one place to swap ngrok → production URL
 

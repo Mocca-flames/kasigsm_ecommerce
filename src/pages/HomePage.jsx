@@ -1,6 +1,7 @@
 import Banner from '../components/Banner/Banner';
 import Hero from '../components/Hero/Hero';
-import Scanner from '../components/Scanner/Scanner';
+import { ScannerProvider } from '../components/Scanner/ScannerContext';
+import ScannerResults from '../components/Scanner/ScannerResults';
 import TrustBar from '../components/TrustBar/TrustBar';
 import ValueProps from '../components/ValueProps/ValueProps';
 import ImeiChecker from '../components/ImeiChecker/ImeiChecker';
@@ -13,15 +14,17 @@ import '../styles/home.css';
 export default function HomePage() {
   return (
     <div className="home-page">
-      <Banner />
-      <Hero />
-      <Scanner />
-      <TrustBar />
-      <ValueProps />
-      <ImeiChecker />
-      <ToolSpotlight />
-      <Blog />
-      <Footer />
+      <ScannerProvider>
+        <Banner />
+        <Hero />
+        <ScannerResults />
+        <TrustBar />
+        <ValueProps />
+        <ImeiChecker />
+        <ToolSpotlight />
+        <Blog />
+        <Footer />
+      </ScannerProvider>
     </div>
   );
 }

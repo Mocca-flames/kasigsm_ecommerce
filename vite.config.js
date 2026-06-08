@@ -6,25 +6,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://api.kasigsm.co.za:8000',
-        changeOrigin: true,
-        secure: false,
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-        },
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-      '/media': {
-        target: 'http://api.kasigsm.co.za:8000',
-        changeOrigin: true,
-        secure: false,
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-        },
-      },
-    },
+
   },
 }
 )

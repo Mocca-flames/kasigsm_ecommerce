@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://api.kasigsm.co.za';
 
 
 const getToken = () => localStorage.getItem('token');

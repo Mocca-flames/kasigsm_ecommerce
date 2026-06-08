@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import frpImage from '../../assets/frp-asdf.jpeg';
+import guideImage from '../../assets/guide.webp';
 
 const POSTS = [
   {
@@ -8,7 +10,8 @@ const POSTS = [
     title: 'How to bypass FRP on Samsung SM-A546B (Android 14)',
     excerpt: 'Step-by-step walkthrough for the most-rented Samsung this month. Works in under 10 minutes with the right tool.',
     meta: '5 min read · Updated this week',
-    image: null,
+    image: guideImage,
+    imageAlt: 'Xiaomi FRP unlock guide for MIUI 14',
   },
   {
     id: 2,
@@ -17,7 +20,8 @@ const POSTS = [
     title: 'New: Xiaomi HyperOS FRP removal now supported',
     excerpt: 'New Xiaomi auth bypass added to the rental catalog. Covers MIUI 14 + HyperOS 1.0 on Redmi Note 13 series.',
     meta: '2 min read',
-    image: null,
+    image: frpImage,
+    imageAlt: 'Electronics repair tools and circuit board',
   },
 ];
 
